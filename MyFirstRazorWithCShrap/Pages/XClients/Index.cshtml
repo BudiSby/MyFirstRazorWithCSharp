@@ -1,0 +1,63 @@
+﻿@page
+@model MyFirstRazorWithCShrap.Pages.XClients.IndexModel
+@using System.Data.SqlClient;
+@{
+    SqlConnection conn = new SqlConnection("server=localhost\\SQLEXPRESS;database=DB_Dummy1;Trusted_Connection=True;user=Budiawan;pwd=Budi9913!;");
+    string query = "select * from clients;";
+}
+
+
+
+<br />
+<h2>List of Clients</h2>
+<a class="btn btn-primary btn-sm" href="/Clients/Create">New Client</a>
+
+@{
+    conn.Open();
+    SqlCommand cmd = new SqlCommand(query, conn);
+    SqlDataReader rdr = cmd.ExecuteReader();
+    <table>
+        <!-- The at-sign before the if is crucial.  The code won't be parsed otherwise and no error will be generated. -->
+        <!-- And note that these are HTML Comments and not C# Comments! -->
+        @if (rdr.HasRows)
+        {
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>Created At</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @while (rdr.Read())
+                {                    
+                    <tr>
+                        <td>@rdr["id"]</td>
+                        <td>@rdr["name"]</td>
+                        <td>@rdr["email"]</td>
+                        <td>@rdr["phone"]</td>
+                        <td>@rdr["address"]</td>
+                        <td>@rdr["created_at"]</td>
+                        <td>
+                            <a class="brn btn-primary btn-sm" href="/Clients/Edit?id=@rdr["id"]">Edit</a>
+                            <a class="brn btn-primary btn-sm" href="/Clients/Delete?id=@rdr["id"]">Delete</a>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        }
+        else
+        {
+            <thead><tr><th>There are no records.</th></tr></thead>
+        }
+        @{
+            rdr.Close();
+            conn.Close();
+        }
+    </table>
+}
